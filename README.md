@@ -1,2 +1,2 @@
 # bigbluebutton-zimlet
-Zimbra BigBlueButton Integration
+Zimbra BigBlueButton integration
