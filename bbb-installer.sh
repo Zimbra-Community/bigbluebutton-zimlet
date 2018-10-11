@@ -32,7 +32,6 @@ fi
 TMPFOLDER="$(mktemp -d /tmp/bbb-installer.XXXXXXXX)"
 cd $TMPFOLDER
 git clone --depth=1 https://github.com/Zimbra-Community/bigbluebutton-zimlet
-read dum
 cd bigbluebutton-zimlet
 
 DB_PWD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-10};echo;)
