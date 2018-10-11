@@ -1,6 +1,14 @@
 Zimbra BigBlueButton Integration
 ==========
 
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen1.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen2.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen3.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen4.png)
+
 ### Install prerequisites
   - Zimbra 8.8 and above
   
