@@ -7,7 +7,7 @@ Zimbra BigBlueButton Integration
 ### Installing
 Use the automated installer:
 
-    https://raw.githubusercontent.com/Zimbra-Community/bigbluebutton-zimlet/master/bbb-installer.sh -O /tmp/bbb-installer.sh
+    wget https://raw.githubusercontent.com/Zimbra-Community/bigbluebutton-zimlet/master/bbb-installer.sh -O /tmp/bbb-installer.sh
     chmod +rx /tmp/bbb-installer.sh
     /tmp/bbb-installer.sh
 
