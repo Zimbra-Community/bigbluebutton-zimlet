@@ -35,25 +35,26 @@ git clone --depth=1 https://github.com/Zimbra-Community/bigbluebutton-zimlet
 cd bigbluebutton-zimlet
 
 DB_PWD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-10};echo;)
-
+DB_HOST=$(su zimbra -c "source ~/bin/zmshutil && zmsetvars && env" | grep "mysql_bind_address" | grep -Ev "antispam" | awk -F "=" '{print $2}')
+DB_PORT=$(su zimbra -c "source ~/bin/zmshutil && zmsetvars && env" | grep "mysql_port" | grep -Ev "antispam" | awk -F "=" '{print $2}')
 
 # creating a user, just to make sure we have one (for mysql on CentOS 6, so we can execute the next mysql queries w/o errors)
 BBBDBCREATE="$(mktemp /tmp/bbb-dbcreate.XXXXXXXX.sql)"
 cat <<EOF > "${BBBDBCREATE}"
 CREATE DATABASE bigbluebutton CHARACTER SET 'UTF8'; 
-CREATE USER 'bigbluebutton'@'127.0.0.1' IDENTIFIED BY '${DB_PWD}'; 
-GRANT ALL PRIVILEGES ON bigbluebutton . * TO 'bigbluebutton'@'127.0.0.1' WITH GRANT OPTION; 
+CREATE USER 'bigbluebutton'@'$DB_HOST' IDENTIFIED BY '${DB_PWD}'; 
+GRANT ALL PRIVILEGES ON bigbluebutton . * TO 'bigbluebutton'@'$DB_HOST' WITH GRANT OPTION; 
 FLUSH PRIVILEGES ; 
 EOF
 
 /opt/zimbra/bin/mysql --force < "${BBBDBCREATE}" > /dev/null 2>&1
 
 cat <<EOF > "${BBBDBCREATE}"
-DROP USER 'bigbluebutton'@'127.0.0.1';
+DROP USER 'bigbluebutton'@'$DB_HOST';
 DROP DATABASE bigbluebutton;
 CREATE DATABASE bigbluebutton DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin; 
-CREATE USER 'bigbluebutton'@'127.0.0.1' IDENTIFIED BY '${DB_PWD}'; 
-GRANT ALL PRIVILEGES ON bigbluebutton . * TO 'bigbluebutton'@'127.0.0.1' WITH GRANT OPTION; 
+CREATE USER 'bigbluebutton'@'$DB_HOST' IDENTIFIED BY '${DB_PWD}'; 
+GRANT ALL PRIVILEGES ON bigbluebutton . * TO 'bigbluebutton'@'$DB_HOST' WITH GRANT OPTION; 
 FLUSH PRIVILEGES ; 
 EOF
 
@@ -64,7 +65,7 @@ rm -Rf /opt/zimbra/lib/ext/bigbluebutton
 mkdir -p /opt/zimbra/lib/ext/bigbluebutton
 
 #here one could optionally support mysql by using jdbc:mysql://, ssl is disabled as this is a local connection
-echo "db_connect_string=jdbc:mariadb://127.0.0.1:7306/bigbluebutton?user=bigbluebutton&password=$DB_PWD" > /opt/zimbra/lib/ext/bigbluebutton/config.properties
+echo "db_connect_string=jdbc:mariadb://$DB_HOST:$DB_PORT/bigbluebutton?user=bigbluebutton&password=$DB_PWD" > /opt/zimbra/lib/ext/bigbluebutton/config.properties
 
 echo "Populating database please wait..."
 /opt/zimbra/bin/mysql bigbluebutton < sql/bigbluebutton.sql
