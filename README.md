@@ -1,6 +1,14 @@
 Zimbra BigBlueButton Integration
 ==========
 
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen1.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen2.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen3.png)
+
+![Zimbra BBB](https://github.com/Zimbra-Community/bigbluebutton-zimlet/raw/master/docu/screen4.png)
+
 ### Install prerequisites
   - Zimbra 8.8 and above
   
@@ -18,9 +26,9 @@ After running the installer configure your BigBlueButton server and API secret l
 
 Deploy the Zimlet
 
-cd /tmp
-wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.1/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
-su zimbra
+     cd /tmp
+     wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.1/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
+     su zimbra
 
-cd /tmp
-zmzimletctl deploy tk_barrydegraaff_bigbluebutton.zip
+     cd /tmp
+     zmzimletctl deploy tk_barrydegraaff_bigbluebutton.zip
