@@ -184,12 +184,14 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                                     (req.getParameter("password").length() > 0)
                                     ) {
                                         String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ","+"));
+                                        resp.setCharacterEncoding("UTF-8");
                                         resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                                         resp.setHeader("Location", joinUrl);
                                     } else {
                                         showPage(resp, meeting.getString("meetingId"));
                                     }
                                 } catch (Exception e) {
+                                    e.printStackTrace();
                                     dbconnection.close();
                                     showPage(resp, meeting.getString("meetingId"));
                                 }
