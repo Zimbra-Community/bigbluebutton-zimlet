@@ -25,17 +25,11 @@ THE SOFTWARE.
 
 package tk.barrydegraaff.bigbluebutton;
 
-
-import com.zimbra.client.ZGetInfoResult;
-import com.zimbra.client.ZMailbox;
-import com.zimbra.common.auth.ZAuthToken;
 import com.zimbra.common.mime.MimeConstants;
 
 import javax.mail.internet.MimeMessage;
 
 import com.zimbra.common.mime.shim.JavaMailInternetAddress;
-import com.zimbra.common.util.ZimbraLog;
-import com.zimbra.common.zmime.ZMimeMessage;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import javax.servlet.ServletException;
@@ -61,7 +55,6 @@ import com.zimbra.cs.account.Cos;
 import com.zimbra.cs.mailbox.MailSender;
 import com.zimbra.cs.mailbox.Mailbox;
 import com.zimbra.cs.mailbox.MailboxManager;
-import com.zimbra.cs.mailbox.calendar.Util;
 import com.zimbra.cs.mime.Mime;
 import com.zimbra.cs.util.JMSession;
 import org.json.JSONObject;
