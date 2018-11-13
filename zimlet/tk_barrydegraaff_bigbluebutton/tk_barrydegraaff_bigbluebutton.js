@@ -101,6 +101,41 @@ function() {
    this.prefDialog();
 };
 
+/** This method gets called by the Zimlet framework when right-click Zimlet menu is clicked.
+ */
+BigBlueButton.prototype.menuItemSelected =
+function(itemId) {
+   var zimletInstance = appCtxt._zimletMgr.getZimletByName('tk_barrydegraaff_bigbluebutton').handlerObject;
+   switch (itemId) {
+   case "host":
+      var controller = appCtxt.getCurrentController();
+      zimletInstance._dialog = new ZmDialog( { title:zimletInstance.getMessage('BigBlueButtonZimlet_label') + " Host Meeting", parent:zimletInstance.getShell(), standardButtons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON], disposeOnPopDown:true } );   
+      
+      zimletInstance._dialog.setContent(
+      '<div style="width:450px; height:240px;">'+
+      '<img style="margin:10px;margin-left:0px;" src="'+zimletInstance.getResource("bigbluebutton-logo.png")+'"><br>'+   
+      zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords')+
+      '<br><br><table>' +
+      '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password')+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
+      '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password')+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
+      '<tr><td>&nbsp;</td><td></td></tr><tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults')+':</td><td><input type="checkbox" id="bigbluebutton_set_defaults"></td></tr>' +
+      '</table></div>'
+      );
+      
+      zimletInstance._dialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(zimletInstance, zimletInstance._JumpToBigBlueButtonListener));
+      zimletInstance._dialog.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(zimletInstance, zimletInstance._cancelBtn));
+      zimletInstance._dialog.setEnterListener(new AjxListener(zimletInstance, zimletInstance._JumpToBigBlueButtonListener));   
+   
+      document.getElementById(zimletInstance._dialog.__internalId+'_handle').style.backgroundColor = '#eeeeee';
+      document.getElementById(zimletInstance._dialog.__internalId+'_title').style.textAlign = 'center';
+      
+      zimletInstance._dialog.popup(); 
+
+      break;
+   }
+};
+
+
 /** This method shows a `ZmToast` status message. That fades in and out in a few seconds.
  * @param {string} text - the message to display
  * @param {string} type - the style of the message e.g. ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, ZmStatusView.LEVEL_CRITICAL
@@ -230,6 +265,70 @@ BigBlueButton.prototype._AddBigBlueButtonLinkHandler = function() {
    document.getElementById(zimletInstance._dialog.__internalId+'_title').style.textAlign = 'center';
    
    zimletInstance._dialog.popup(); 
+};
+
+BigBlueButton.prototype._JumpToBigBlueButtonListener = function() {  
+   var zimletInstance = appCtxt._zimletMgr.getZimletByName('tk_barrydegraaff_bigbluebutton').handlerObject; 
+   
+   if(document.getElementById('bigbluebutton_set_defaults').checked)
+   {
+      zimletInstance.setUserProperty("bigbluebutton_moderator_password", document.getElementById('bigbluebutton_moderator_password').value, false);
+      zimletInstance.setUserProperty("bigbluebutton_attendee_password", document.getElementById('bigbluebutton_attendee_password').value, true);
+      zimletInstance.settings['bigbluebutton_moderator_password']=document.getElementById('bigbluebutton_moderator_password').value;
+      zimletInstance.settings['bigbluebutton_attendee_password']=document.getElementById('bigbluebutton_attendee_password').value;
+   }
+   
+   if(document.getElementById('bigbluebutton_moderator_password').value && document.getElementById('bigbluebutton_attendee_password').value)
+   {
+      var xhr = new XMLHttpRequest();
+      xhr.open( "GET", '/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword='+document.getElementById('bigbluebutton_attendee_password').value+'&moderatorPassword='+document.getElementById('bigbluebutton_moderator_password').value, true );
+      xhr.send( );
+      xhr.onreadystatechange = function (oEvent) 
+      {  
+         var meetingId = "";
+         if (xhr.readyState === 4) 
+         {  
+            if (xhr.status === 200) 
+            {
+               try
+               {
+                  meetingId = xhr.response;
+               }
+               catch(err)
+               {
+               }
+            }
+
+            if(meetingId.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i))
+            {
+               
+               var url = [];
+               var i = 0;
+               var proto = location.protocol;
+               var port = Number(location.port);
+               url[i++] = proto;
+               url[i++] = "//";
+               url[i++] = location.hostname;
+               if (port && ((proto == ZmSetting.PROTO_HTTP && port != ZmSetting.HTTP_DEFAULT_PORT) 
+                  || (proto == ZmSetting.PROTO_HTTPS && port != ZmSetting.HTTPS_DEFAULT_PORT))) {
+                  url[i++] = ":";
+                  url[i++] = port;
+               }               
+               
+               window.open(url.join("")+'/service/extension/bigbluebutton?meetingId='+meetingId);
+               zimletInstance._cancelBtn();
+            }  
+            else
+            {
+               BigBlueButton.prototype.status(ZmMsg.errorApplication, ZmStatusView.LEVEL_CRITICAL);
+            }   
+         } 
+      }      
+   }
+   else
+   {
+      BigBlueButton.prototype.status(zimletInstance.getMessage('BigBlueButtonZimlet_password_required'), ZmStatusView.LEVEL_WARNING);
+   }  
 };
 
 BigBlueButton.prototype._AddBigBlueButtonLinkInserter = function() {  
