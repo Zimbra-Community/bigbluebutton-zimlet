@@ -86,7 +86,7 @@ WARNING: BigBlueButton database is dropped on Zimbra upgrades!
 
 Please deploy the Zimlet yourself:
     cd /tmp
-    wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.1/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
+    wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.2/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
     su zimbra
     
     cd /tmp
