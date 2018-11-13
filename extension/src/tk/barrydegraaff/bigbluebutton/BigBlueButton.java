@@ -223,9 +223,9 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                 PreparedStatement stmt = connection.prepareStatement("INSERT INTO meetings VALUES (?,?,?,?,NOW())");
                                 //Perhaps we should wrap uriDecode() around the parameters to decode them? Seems Java already did at this point
                                 stmt.setString(1, zimbraCurrentUserAccount.getName());
-                                stmt.setString(2, newMeetingId);
-                                stmt.setString(3, req.getParameter("moderatorPassword"));
-                                stmt.setString(4, req.getParameter("attendeePassword"));
+                                stmt.setString(2, newMeetingId);                                
+                                stmt.setString(3, req.getParameter("attendeePassword"));
+                                stmt.setString(4, req.getParameter("moderatorPassword"));
                                 stmt.executeQuery();
                             }
                             connection.close();
