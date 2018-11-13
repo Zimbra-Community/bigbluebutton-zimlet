@@ -26,6 +26,16 @@ THE SOFTWARE.
 package tk.barrydegraaff.bigbluebutton;
 
 
+import com.zimbra.client.ZGetInfoResult;
+import com.zimbra.client.ZMailbox;
+import com.zimbra.common.auth.ZAuthToken;
+import com.zimbra.common.mime.MimeConstants;
+
+import javax.mail.internet.MimeMessage;
+
+import com.zimbra.common.mime.shim.JavaMailInternetAddress;
+import com.zimbra.common.util.ZimbraLog;
+import com.zimbra.common.zmime.ZMimeMessage;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import javax.servlet.ServletException;
@@ -48,6 +58,12 @@ import com.zimbra.cs.account.Provisioning;
 import com.zimbra.cs.account.Account;
 import com.zimbra.cs.account.Cos;
 
+import com.zimbra.cs.mailbox.MailSender;
+import com.zimbra.cs.mailbox.Mailbox;
+import com.zimbra.cs.mailbox.MailboxManager;
+import com.zimbra.cs.mailbox.calendar.Util;
+import com.zimbra.cs.mime.Mime;
+import com.zimbra.cs.util.JMSession;
 import org.json.JSONObject;
 import org.json.XML;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -183,7 +199,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                             (req.getParameter("name").length() > 0) &&
                                                     (req.getParameter("password").length() > 0)
                                     ) {
-                                        String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ","+"));
+                                        String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ", "+"));
                                         resp.setCharacterEncoding("UTF-8");
                                         resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                                         resp.setHeader("Location", joinUrl);
@@ -223,10 +239,12 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                 PreparedStatement stmt = connection.prepareStatement("INSERT INTO meetings VALUES (?,?,?,?,NOW())");
                                 //Perhaps we should wrap uriDecode() around the parameters to decode them? Seems Java already did at this point
                                 stmt.setString(1, zimbraCurrentUserAccount.getName());
-                                stmt.setString(2, newMeetingId);                                
+                                stmt.setString(2, newMeetingId);
                                 stmt.setString(3, req.getParameter("attendeePassword"));
                                 stmt.setString(4, req.getParameter("moderatorPassword"));
                                 stmt.executeQuery();
+
+                                sendConfirmation(zimbraCurrentUserAccount, newMeetingId, req.getParameter("attendeePassword"), req.getParameter("moderatorPassword"));
                             }
                             connection.close();
                             responseWriter(resp, newMeetingId);
@@ -321,14 +339,26 @@ public class BigBlueButton extends ExtensionHttpHandler {
         }
     }
 
+    private void sendConfirmation(Account account, String meetingId, String attendeePassword, String moderatorPassword) {
+        try {
+            MimeMessage mm = new Mime.FixedMimeMessage(JMSession.getSmtpSession(account));
 
-    private int getRandomNumberInRange(int min, int max) {
+            String to = account.getName();
 
-        if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
+            mm.setRecipient(javax.mail.Message.RecipientType.TO, new JavaMailInternetAddress(to));
+            //mm.setText("To join the Meeting Online go to:\\r\\n[meetinglink]\\r\\n\\r\\nYou can use the following password:\\r\\n[password]\\r\\n", MimeConstants.P_CHARSET_UTF8);
+            mm.setContent("You have just scheduled a new BigBlueButton meeting.<br><br><a href=\"/service/extension/bigbluebutton?meetingId="+meetingId+"\">Click here to join Online Meeting</a><br><br>You can use the following moderator password: <b>"+moderatorPassword+"</b><br>And share the following password for your attendees: <b>"+attendeePassword+"</b>",MimeConstants.CT_TEXT_HTML);
+            mm.setSubject("BigBlueButton meeting confirmation");
+            mm.saveChanges();
+
+            Mailbox mbox = MailboxManager.getInstance().getMailboxByAccount(account);
+            MailSender mailSender = mbox.getMailSender();
+
+            mailSender.setSaveToSent(false);
+            mailSender.sendMimeMessage(null, mbox, mm);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
     }
 }
