@@ -109,16 +109,21 @@ function(itemId) {
    switch (itemId) {
    case "host":
       var controller = appCtxt.getCurrentController();
-      zimletInstance._dialog = new ZmDialog( { title:zimletInstance.getMessage('BigBlueButtonZimlet_label') + " Host Meeting", parent:zimletInstance.getShell(), standardButtons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON], disposeOnPopDown:true } );   
+      zimletInstance._dialog = new ZmDialog( { title:(zimletInstance.getMessage('BigBlueButtonZimlet_label').indexOf('???') == 0) ? "BigBlueButton" : zimletInstance.getMessage('BigBlueButtonZimlet_label') + " Host Meeting", parent:zimletInstance.getShell(), standardButtons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON], disposeOnPopDown:true } );   
+      
+      var default_password = (zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords').indexOf('???') == 0) ? "Here you can set the default moderator and attendee passwords.<br>Changes here affect only new meetings, not already planned ones." : zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords');
+      var moderator_password = (zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password').indexOf('???') == 0) ? "Moderator Password" : zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password');
+      var attendee_password = (zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password').indexOf('???') == 0) ? "Attendee Password" : zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password');
+      var set_defaults = (zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults').indexOf('???') == 0) ? "Set as default for future meetings" : zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults');
       
       zimletInstance._dialog.setContent(
       '<div style="width:450px; height:240px;">'+
       '<img style="margin:10px;margin-left:0px;" src="'+zimletInstance.getResource("bigbluebutton-logo.png")+'"><br>'+   
-      zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords')+
+      default_password+
       '<br><br><table>' +
-      '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password')+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
-      '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password')+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
-      '<tr><td>&nbsp;</td><td></td></tr><tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults')+':</td><td><input type="checkbox" id="bigbluebutton_set_defaults"></td></tr>' +
+      '<tr><td>'+moderator_password+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
+      '<tr><td>'+attendee_password+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
+      '<tr><td>&nbsp;</td><td></td></tr><tr><td>'+set_defaults+':</td><td><input type="checkbox" id="bigbluebutton_set_defaults"></td></tr>' +
       '</table></div>'
       );
       
@@ -148,15 +153,19 @@ BigBlueButton.prototype.status = function(text, type) {
 BigBlueButton.prototype.prefDialog =
 function() {
    var zimletInstance = appCtxt._zimletMgr.getZimletByName('tk_barrydegraaff_bigbluebutton').handlerObject;
-   zimletInstance._dialog = new ZmDialog( { title:zimletInstance.getMessage('BigBlueButtonZimlet_label'), parent:this.getShell(), standardButtons:[DwtDialog.CANCEL_BUTTON,DwtDialog.OK_BUTTON], disposeOnPopDown:true } );   
+      var default_password = (zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords').indexOf('???') == 0) ? "Here you can set the default moderator and attendee passwords.<br>Changes here affect only new meetings, not already planned ones." : zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords');
+      var moderator_password = (zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password').indexOf('???') == 0) ? "Moderator Password" : zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password');
+      var attendee_password = (zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password').indexOf('???') == 0) ? "Attendee Password" : zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password');
+      var set_defaults = (zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults').indexOf('???') == 0) ? "Set as default for future meetings" : zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults');   
+   zimletInstance._dialog = new ZmDialog( { title:(zimletInstance.getMessage('BigBlueButtonZimlet_label').indexOf('???') == 0) ? "BigBlueButton" : zimletInstance.getMessage('BigBlueButtonZimlet_label'), parent:this.getShell(), standardButtons:[DwtDialog.CANCEL_BUTTON,DwtDialog.OK_BUTTON], disposeOnPopDown:true } );   
    
    zimletInstance._dialog.setContent(
    '<div style="width:450px; height:160px;">'+
    '<img style="margin:10px;margin-left:0px;" src="'+zimletInstance.getResource("bigbluebutton-logo.png")+'"><br>'+   
-   zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords')+
+   default_password+
    '<br><br><table>' +
-   '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password')+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
-   '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password')+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
+   '<tr><td>'+moderator_password+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
+   '<tr><td>'+attendee_password+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
    '</table></div>'
    );
    
@@ -210,7 +219,6 @@ BigBlueButton.prototype.initializeToolbar = function(app, toolbar, controller, v
 BigBlueButton.prototype._initCalendarBigBlueButtonToolbar = function(toolbar, controller) {
    var zimletInstance = appCtxt._zimletMgr.getZimletByName('tk_barrydegraaff_bigbluebutton').handlerObject;
 	if (!toolbar.getButton("BIGBLUEBUTTON2")) {
-		//ZmMsg.sforceAdd = this.getMessage("BigBlueButtonZimlet_saveAsBigBlueButton");
 		var buttonIndex = toolbar.opList.length + 1;
 		var button = toolbar.createOp("BIGBLUEBUTTON2", {image:"tk_barrydegraaff_bigbluebutton-panelIcon", text:"BigBlueButton", index:buttonIndex});
 		toolbar.addOp("BIGBLUEBUTTON2", buttonIndex);
@@ -244,16 +252,19 @@ BigBlueButton.prototype._AddBigBlueButtonLinkHandler = function() {
    }
    
    var controller = appCtxt.getCurrentController();
-   zimletInstance._dialog = new ZmDialog( { title:zimletInstance.getMessage('BigBlueButtonZimlet_label'), parent:zimletInstance.getShell(), standardButtons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON], disposeOnPopDown:true } );   
-   
+   zimletInstance._dialog = new ZmDialog( { title:(zimletInstance.getMessage('BigBlueButtonZimlet_label').indexOf('???') == 0) ? "BigBlueButton" : zimletInstance.getMessage('BigBlueButtonZimlet_label'), parent:zimletInstance.getShell(), standardButtons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON], disposeOnPopDown:true } );   
+   var default_password = (zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords').indexOf('???') == 0) ? "Here you can set the default moderator and attendee passwords.<br>Changes here affect only new meetings, not already planned ones." : zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords');
+   var moderator_password = (zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password').indexOf('???') == 0) ? "Moderator Password" : zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password');
+   var attendee_password = (zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password').indexOf('???') == 0) ? "Attendee Password" : zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password');
+   var set_defaults = (zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults').indexOf('???') == 0) ? "Set as default for future meetings" : zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults');      
    zimletInstance._dialog.setContent(
    '<div style="width:450px; height:240px;">'+
    '<img style="margin:10px;margin-left:0px;" src="'+zimletInstance.getResource("bigbluebutton-logo.png")+'"><br>'+   
-   zimletInstance.getMessage('BigBlueButtonZimlet_default_passwords')+
+   default_password+
    '<br><br><table>' +
-   '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_moderator_password')+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
-   '<tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_attendee_password')+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
-   '<tr><td>&nbsp;</td><td></td></tr><tr><td>'+zimletInstance.getMessage('BigBlueButtonZimlet_set_defaults')+':</td><td><input type="checkbox" id="bigbluebutton_set_defaults"></td></tr>' +
+   '<tr><td>'+moderator_password+':</td><td><input id="bigbluebutton_moderator_password" value="'+zimletInstance.settings['bigbluebutton_moderator_password']+'"></td></tr>' +
+   '<tr><td>'+attendee_password+':</td><td><input id="bigbluebutton_attendee_password" value="'+zimletInstance.settings['bigbluebutton_attendee_password']+'"></td></tr>' +
+   '<tr><td>&nbsp;</td><td></td></tr><tr><td>'+set_defaults+':</td><td><input type="checkbox" id="bigbluebutton_set_defaults"></td></tr>' +
    '</table></div>'
    );
    
@@ -327,7 +338,8 @@ BigBlueButton.prototype._JumpToBigBlueButtonListener = function() {
    }
    else
    {
-      BigBlueButton.prototype.status(zimletInstance.getMessage('BigBlueButtonZimlet_password_required'), ZmStatusView.LEVEL_WARNING);
+      var password_required = (zimletInstance.getMessage('BigBlueButtonZimlet_password_required').indexOf('???') == 0) ? "Please set a Moderator and Attendee Password" : zimletInstance.getMessage('BigBlueButtonZimlet_password_required');
+      BigBlueButton.prototype.status(password_required, ZmStatusView.LEVEL_WARNING);
    }  
 };
 
@@ -366,7 +378,7 @@ BigBlueButton.prototype._AddBigBlueButtonLinkInserter = function() {
 
             if(meetingId.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i))
             {
-               var message = zimletInstance.getMessage('BigBlueButtonZimlet_Meeting_Message');   
+               var message = (zimletInstance.getMessage('BigBlueButtonZimlet_Meeting_Message').indexOf('???') == 0) ? "To join the Meeting Online go to:\r\n[meetinglink]\r\n\r\nYou can use the following password:\r\n[password]\r\n" : zimletInstance.getMessage('BigBlueButtonZimlet_Meeting_Message');
                var editorType = "HTML";
                if (controller._composeView.getComposeMode() != "text/html") {
                   editorType = "PLAIN_TEXT";
@@ -415,7 +427,8 @@ BigBlueButton.prototype._AddBigBlueButtonLinkInserter = function() {
    }
    else
    {
-      BigBlueButton.prototype.status(zimletInstance.getMessage('BigBlueButtonZimlet_password_required'), ZmStatusView.LEVEL_WARNING);
+      var password_required = (zimletInstance.getMessage('BigBlueButtonZimlet_password_required').indexOf('???') == 0) ? "Please set a Moderator and Attendee Password" : zimletInstance.getMessage('BigBlueButtonZimlet_password_required');
+      BigBlueButton.prototype.status(password_required, ZmStatusView.LEVEL_WARNING);
    }  
 };
 
