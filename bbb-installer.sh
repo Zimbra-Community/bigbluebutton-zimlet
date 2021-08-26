@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Barry de Graaff
+# Copyright (C) 2017-2021 Barry de Graaff
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ WARNING: BigBlueButton database is dropped on Zimbra upgrades!
 
 Please deploy the Zimlet yourself:
     cd /tmp
-    wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.2/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
+    wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.3/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
     su zimbra
     
     cd /tmp
