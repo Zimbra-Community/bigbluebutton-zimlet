@@ -30,6 +30,7 @@ import com.zimbra.common.mime.MimeConstants;
 import javax.mail.internet.MimeMessage;
 
 import com.zimbra.common.mime.shim.JavaMailInternetAddress;
+import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import javax.servlet.ServletException;
@@ -56,6 +57,7 @@ import com.zimbra.cs.mailbox.MailSender;
 import com.zimbra.cs.mailbox.Mailbox;
 import com.zimbra.cs.mailbox.MailboxManager;
 import com.zimbra.cs.mime.Mime;
+import com.zimbra.cs.servlet.util.AuthUtil;
 import com.zimbra.cs.util.JMSession;
 import org.json.JSONObject;
 import org.json.XML;
@@ -99,167 +101,151 @@ public class BigBlueButton extends ExtensionHttpHandler {
      */
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-
-        //Get the information of the currently logged in Zimbra user
-        String authTokenStr = null;
+        //all authentication is done by AuthUtil.getAuthTokenFromHttpReq, returns null if unauthorized
+        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(req, resp, false, true);
         Account zimbraCurrentUserAccount = null;
-        //Just read a cos value to see if its a valid user
-        try {
-            Cookie[] cookies = req.getCookies();
-            for (int n = 0; n < cookies.length; n++) {
-                Cookie cookie = cookies[n];
 
-                if (cookie.getName().equals("ZM_AUTH_TOKEN")) {
-                    authTokenStr = cookie.getValue();
-                    break;
-                }
-            }
-
-            if (authTokenStr != null) {
-                AuthToken authToken = AuthToken.getAuthToken(authTokenStr);
-                Provisioning prov = Provisioning.getInstance();
-                zimbraCurrentUserAccount = Provisioning.getInstance().getAccountById(authToken.getAccountId());
-                Cos cos = prov.getCOS(zimbraCurrentUserAccount);
-                Set<String> allowedDomains = cos.getMultiAttrSet(Provisioning.A_zimbraProxyAllowedDomains);
-            } else {
-                zimbraCurrentUserAccount = null;
-            }
-
-        } catch (Exception ex) {
-            //crafted cookie?
-            zimbraCurrentUserAccount = null;
-        }
-
-        //Get the extension properties
-        Properties prop = new Properties();
-        try {
-            FileInputStream input = new FileInputStream("/opt/zimbra/lib/ext/bigbluebutton/config.properties");
-            prop.load(input);
-            this.BBBSecret = prop.getProperty("BBBSecret");
-            this.BBBServerUrl = prop.getProperty("BBBServerUrl");
-            this.DbConnectionString = prop.getProperty("db_connect_string");
-            input.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return;
-        }
-
-        //Process get request with parameters
-        final Map<String, String> paramsMap = new HashMap<String, String>();
-        if (req.getQueryString() != null) {
-            String[] params = req.getQueryString().split("&");
-            for (String param : params) {
-                String[] subParam = param.split("=");
-                if (subParam.length == 2) {
-                    paramsMap.put(subParam[0], subParam[1]);
-                } else {
-                    paramsMap.put(subParam[0], "");
-                }
-            }
-
-            String action = "join";
+        if (authToken != null) {
             try {
-                String newAction = paramsMap.get("action");
-                if ((newAction != null && (newAction.length() > 1))) {
-                    action = newAction;
-                }
-            } catch (Exception e) {
-
+                zimbraCurrentUserAccount = Provisioning.getInstance().getAccountById(authToken.getAccountId());
+            } catch (ServiceException e) {
+                e.printStackTrace();
+            }
+            //Get the extension properties
+            Properties prop = new Properties();
+            try {
+                FileInputStream input = new FileInputStream("/opt/zimbra/lib/ext/bigbluebutton/config.properties");
+                prop.load(input);
+                this.BBBSecret = prop.getProperty("BBBSecret");
+                this.BBBServerUrl = prop.getProperty("BBBServerUrl");
+                this.DbConnectionString = prop.getProperty("db_connect_string");
+                input.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return;
             }
 
-            switch (action) {
-                case "join":
-                    //https://zimbradev/service/extension/bigbluebutton?meetingId=d73a55f1-f2aa-45fd-897f-94967a9cbf58  (point to form with meetingId pre-filled)
-                    //https://zimbradev/service/extension/bigbluebutton?meetingId=d73a55f1-f2aa-45fd-897f-94967a9cbf58&name=Barry&password=up3lyhMWi&action=join (redirects to bbb after the form)
-                    try {
-                        //Make sure we have a GUID meetingId (prevents SQL injection)
-                        UUID isValid = UUID.fromString(paramsMap.get("meetingId"));
-                        if (isValid.toString().length() > 1) {
-                            String db_connect_string = this.DbConnectionString;
-                            Connection dbconnection = DriverManager.getConnection(db_connect_string);
-                            PreparedStatement stmt = dbconnection.prepareStatement("SELECT * FROM meetings WHERE meetingID = ?");
-                            stmt.setString(1, paramsMap.get("meetingId"));
-                            ResultSet meeting = stmt.executeQuery();
-                            Boolean meetingFound = false;
-                            //Should always run just once, as meetingId is PK in SQL.
-                            while (meeting.next()) {
-                                meetingFound = true;
-                                bbbRequest("create", "meetingID=" + meeting.getString("meetingId") + "&attendeePW=" + meeting.getString("attendeePW") + "&moderatorPW=" + meeting.getString("moderatorPW"));
+            //Process get request with parameters
+            final Map<String, String> paramsMap = new HashMap<String, String>();
+            if (req.getQueryString() != null) {
+                String[] params = req.getQueryString().split("&");
+                for (String param : params) {
+                    String[] subParam = param.split("=");
+                    if (subParam.length == 2) {
+                        paramsMap.put(subParam[0], subParam[1]);
+                    } else {
+                        paramsMap.put(subParam[0], "");
+                    }
+                }
 
-                                try {
-                                    //req.getParameter throws nullpointer when not specified, then the else block would not get called. To-do rewrite
-                                    if (
-                                            (req.getParameter("name").length() > 0) &&
-                                                    (req.getParameter("password").length() > 0)
-                                    ) {
-                                        String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ", "+"));
-                                        resp.setCharacterEncoding("UTF-8");
-                                        resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-                                        resp.setHeader("Location", joinUrl);
-                                    } else {
+                String action = "join";
+                try {
+                    String newAction = paramsMap.get("action");
+                    if ((newAction != null && (newAction.length() > 1))) {
+                        action = newAction;
+                    }
+                } catch (Exception e) {
+
+                }
+
+                switch (action) {
+                    case "join":
+                        //https://zimbradev/service/extension/bigbluebutton?meetingId=d73a55f1-f2aa-45fd-897f-94967a9cbf58  (point to form with meetingId pre-filled)
+                        //https://zimbradev/service/extension/bigbluebutton?meetingId=d73a55f1-f2aa-45fd-897f-94967a9cbf58&name=Barry&password=up3lyhMWi&action=join (redirects to bbb after the form)
+                        try {
+                            //Make sure we have a GUID meetingId (prevents SQL injection)
+                            UUID isValid = UUID.fromString(paramsMap.get("meetingId"));
+                            if (isValid.toString().length() > 1) {
+                                String db_connect_string = this.DbConnectionString;
+                                Connection dbconnection = DriverManager.getConnection(db_connect_string);
+                                PreparedStatement stmt = dbconnection.prepareStatement("SELECT * FROM meetings WHERE meetingID = ?");
+                                stmt.setString(1, paramsMap.get("meetingId"));
+                                ResultSet meeting = stmt.executeQuery();
+                                Boolean meetingFound = false;
+                                //Should always run just once, as meetingId is PK in SQL.
+                                while (meeting.next()) {
+                                    meetingFound = true;
+                                    bbbRequest("create", "meetingID=" + meeting.getString("meetingId") + "&name=Zimbra&attendeePW=" + meeting.getString("attendeePW") + "&moderatorPW=" + meeting.getString("moderatorPW"));
+
+                                    try {
+                                        //req.getParameter throws nullpointer when not specified, then the else block would not get called. To-do rewrite
+                                        if (
+                                                (req.getParameter("name").length() > 0) &&
+                                                        (req.getParameter("password").length() > 0)
+                                        ) {
+                                            String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ", "+"));
+                                            resp.setCharacterEncoding("UTF-8");
+                                            resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                                            resp.setHeader("Location", joinUrl);
+                                        } else {
+                                            showPage(resp, meeting.getString("meetingId"));
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        dbconnection.close();
                                         showPage(resp, meeting.getString("meetingId"));
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    dbconnection.close();
-                                    showPage(resp, meeting.getString("meetingId"));
                                 }
-                            }
-                            dbconnection.close();
-                            if (!meetingFound) {
+                                dbconnection.close();
+                                if (!meetingFound) {
+                                    showPage(resp, "");
+                                }
+                            } else {
                                 showPage(resp, "");
                             }
-                        } else {
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                             showPage(resp, "");
                         }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        showPage(resp, "");
-                    }
+                        break;
+                    case "getNewMeetingId":
+                        //api call: https://zimbradev/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword=1234&moderatorPassword=2345
+                        try {
+                            //This is an authenticated Zimbra user, allow creation of meeting
+                            if (zimbraCurrentUserAccount != null) {
+                                final String newMeetingId = java.util.UUID.randomUUID().toString();
+                                String db_connect_string = this.DbConnectionString;
+                                Connection connection = DriverManager.getConnection(db_connect_string);
 
-                    break;
-                case "getNewMeetingId":
-                    //api call: https://zimbradev/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword=1234&moderatorPassword=2345
-                    try {
-                        //This is an authenticated Zimbra user, allow creation of meeting
-                        if (zimbraCurrentUserAccount != null) {
-                            final String newMeetingId = java.util.UUID.randomUUID().toString();
-                            String db_connect_string = this.DbConnectionString;
-                            Connection connection = DriverManager.getConnection(db_connect_string);
-
-                            if (!connection.isClosed()) {
-                                PreparedStatement stmt = connection.prepareStatement("INSERT INTO meetings VALUES (?,?,?,?,NOW())");
-                                //Perhaps we should wrap uriDecode() around the parameters to decode them? Seems Java already did at this point
-                                stmt.setString(1, zimbraCurrentUserAccount.getName());
-                                stmt.setString(2, newMeetingId);
-                                stmt.setString(3, req.getParameter("attendeePassword"));
-                                stmt.setString(4, req.getParameter("moderatorPassword"));
-                                stmt.executeQuery();
-
-                                sendConfirmation(zimbraCurrentUserAccount, newMeetingId, req.getParameter("attendeePassword"), req.getParameter("moderatorPassword"));
+                                if (!connection.isClosed()) {
+                                    PreparedStatement stmt = connection.prepareStatement("INSERT INTO meetings VALUES (?,?,?,?,NOW())");
+                                    //Perhaps we should wrap uriDecode() around the parameters to decode them? Seems Java already did at this point
+                                    stmt.setString(1, zimbraCurrentUserAccount.getName());
+                                    stmt.setString(2, newMeetingId);
+                                    stmt.setString(3, req.getParameter("attendeePassword"));
+                                    stmt.setString(4, req.getParameter("moderatorPassword"));
+                                    stmt.executeQuery();
+                                    String hostname = "";
+                                    if (req.getParameter("hostname") != null)
+                                    {
+                                        hostname = "https://"+req.getParameter("hostname");
+                                    }
+                                    sendConfirmation(zimbraCurrentUserAccount, newMeetingId, req.getParameter("attendeePassword"), req.getParameter("moderatorPassword"), hostname);
+                                }
+                                connection.close();
+                                responseWriter(resp, newMeetingId);
+                            } else {
+                                responseWriter(resp, "Error getting new meeting (1).");
                             }
-                            connection.close();
-                            responseWriter(resp, newMeetingId);
-                        } else {
-                            responseWriter(resp, "Error getting new meeting (1).");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            responseWriter(resp, "Error getting new meeting (2).");
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        responseWriter(resp, "Error getting new meeting (2).");
-                    }
-                    break;
-                default:
-                    showPage(resp, "");
-                    break;
+                        break;
+                    default:
+                        showPage(resp, "");
+                        break;
 
+                }
+                return;
+
+            } else {
+                //Show the default response
+                showPage(resp, "");
+                return;
             }
-            return;
-
-        } else {
-            //Show the default response
-            showPage(resp, "");
-            return;
         }
     }
 
@@ -332,15 +318,13 @@ public class BigBlueButton extends ExtensionHttpHandler {
         }
     }
 
-    private void sendConfirmation(Account account, String meetingId, String attendeePassword, String moderatorPassword) {
+    private void sendConfirmation(Account account, String meetingId, String attendeePassword, String moderatorPassword, String hostname) {
         try {
             MimeMessage mm = new Mime.FixedMimeMessage(JMSession.getSmtpSession(account));
-
             String to = account.getName();
-
             mm.setRecipient(javax.mail.Message.RecipientType.TO, new JavaMailInternetAddress(to));
             //mm.setText("To join the Meeting Online go to:\\r\\n[meetinglink]\\r\\n\\r\\nYou can use the following password:\\r\\n[password]\\r\\n", MimeConstants.P_CHARSET_UTF8);
-            mm.setContent("You have just scheduled a new BigBlueButton meeting.<br><br><a href=\"/service/extension/bigbluebutton?meetingId="+meetingId+"\">Click here to join Online Meeting</a><br><br>You can use the following moderator password: <b>"+moderatorPassword+"</b><br>And share the following password for your attendees: <b>"+attendeePassword+"</b>",MimeConstants.CT_TEXT_HTML);
+            mm.setContent("You have just scheduled a new BigBlueButton meeting.<br><br><a href=\""+hostname+"/service/extension/bigbluebutton?meetingId=" + meetingId + "\">Click here to join Online Meeting</a><br><br>You can use the following moderator password: <b>" + moderatorPassword + "</b><br>And share the following password for your attendees: <b>" + attendeePassword + "</b>", MimeConstants.CT_TEXT_HTML);
             mm.setSubject("BigBlueButton meeting confirmation");
             mm.saveChanges();
 

@@ -1,6 +1,6 @@
 /**
 This file is part of the BigBlueButton Zimlet
-Copyright (C) 2014-2018  Barry de Graaff
+Copyright (C) 2014-2022  Barry de Graaff
 
 Bugs and feedback: https://github.com/Zimbra-Community/bigbluebutton/issues
 
@@ -292,7 +292,7 @@ BigBlueButton.prototype._JumpToBigBlueButtonListener = function() {
    if(document.getElementById('bigbluebutton_moderator_password').value && document.getElementById('bigbluebutton_attendee_password').value)
    {
       var xhr = new XMLHttpRequest();
-      xhr.open( "GET", '/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword='+document.getElementById('bigbluebutton_attendee_password').value+'&moderatorPassword='+document.getElementById('bigbluebutton_moderator_password').value, true );
+      xhr.open( "GET", '/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword='+document.getElementById('bigbluebutton_attendee_password').value+'&moderatorPassword='+document.getElementById('bigbluebutton_moderator_password').value+'&hostname='+window.location.hostname, true );
       xhr.send( );
       xhr.onreadystatechange = function (oEvent) 
       {  
@@ -358,7 +358,7 @@ BigBlueButton.prototype._AddBigBlueButtonLinkInserter = function() {
    if(document.getElementById('bigbluebutton_moderator_password').value && document.getElementById('bigbluebutton_attendee_password').value)
    {
       var xhr = new XMLHttpRequest();
-      xhr.open( "GET", '/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword='+document.getElementById('bigbluebutton_attendee_password').value+'&moderatorPassword='+document.getElementById('bigbluebutton_moderator_password').value, true );
+      xhr.open( "GET", '/service/extension/bigbluebutton?action=getNewMeetingId&attendeePassword='+document.getElementById('bigbluebutton_attendee_password').value+'&moderatorPassword='+document.getElementById('bigbluebutton_moderator_password').value+'&hostname='+window.location.hostname, true );
       xhr.send( );
       xhr.onreadystatechange = function (oEvent) 
       {  

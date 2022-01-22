@@ -32,3 +32,7 @@ Deploy the Zimlet
 
      cd /tmp
      zmzimletctl deploy tk_barrydegraaff_bigbluebutton.zip
+
+Deploy the Zimlet for Modern UI (Zimbra 9)
+
+See: https://github.com/Zimbra-Community/zimbra-zimlet-bigbluebutton
