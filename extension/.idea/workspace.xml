@@ -175,22 +175,22 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java</url>
-          <line>297</line>
+          <line>296</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java</url>
-          <line>298</line>
+          <line>297</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java</url>
-          <line>245</line>
+          <line>244</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java</url>
-          <line>237</line>
+          <line>236</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>

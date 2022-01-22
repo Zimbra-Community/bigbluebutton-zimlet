@@ -34,7 +34,6 @@ import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,6 +41,7 @@ import java.io.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -51,7 +51,6 @@ import java.sql.*;
 import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.Provisioning;
 import com.zimbra.cs.account.Account;
-import com.zimbra.cs.account.Cos;
 
 import com.zimbra.cs.mailbox.MailSender;
 import com.zimbra.cs.mailbox.Mailbox;
@@ -173,7 +172,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                                 (req.getParameter("name").length() > 0) &&
                                                         (req.getParameter("password").length() > 0)
                                         ) {
-                                            String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + req.getParameter("name").replaceAll(" ", "+"));
+                                            String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + encodeURIComponent(req.getParameter("name")));
                                             resp.setCharacterEncoding("UTF-8");
                                             resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                                             resp.setHeader("Location", joinUrl);
@@ -338,4 +337,36 @@ public class BigBlueButton extends ExtensionHttpHandler {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Encodes the passed String as UTF-8 using an algorithm that's compatible
+     * with JavaScript's <code>encodeURIComponent</code> function. Returns
+     * <code>null</code> if the String is <code>null</code>.
+     *
+     * @param s The String to be encoded
+     * @return the encoded String
+     */
+    public static String encodeURIComponent(String s)
+    {
+        String result = null;
+        try
+        {
+            result = URLEncoder.encode(s, "UTF-8")
+                    .replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!")
+                    .replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(")
+                    .replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        }
+
+        // This exception should never occur.
+        catch (UnsupportedEncodingException e)
+        {
+            result = s;
+        }
+
+        return result;
+    }
+
 }
