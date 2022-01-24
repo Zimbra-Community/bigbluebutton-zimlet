@@ -30,7 +30,6 @@ import com.zimbra.common.mime.MimeConstants;
 import javax.mail.internet.MimeMessage;
 
 import com.zimbra.common.mime.shim.JavaMailInternetAddress;
-import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import javax.servlet.ServletException;
@@ -106,7 +105,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
 
         try {
             zimbraCurrentUserAccount = Provisioning.getInstance().getAccountById(authToken.getAccountId());
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             zimbraCurrentUserAccount = null;
         }
         //Get the extension properties
