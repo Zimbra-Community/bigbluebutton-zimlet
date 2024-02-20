@@ -220,7 +220,7 @@ BigBlueButton.prototype._initCalendarBigBlueButtonToolbar = function(toolbar, co
    var zimletInstance = appCtxt._zimletMgr.getZimletByName('tk_barrydegraaff_bigbluebutton').handlerObject;
 	if (!toolbar.getButton("BIGBLUEBUTTON2")) {
 		var buttonIndex = toolbar.opList.length + 1;
-		var button = toolbar.createOp("BIGBLUEBUTTON2", {image:"tk_barrydegraaff_bigbluebutton-panelIcon", text:"BigBlueButton", index:buttonIndex});
+		var button = toolbar.createOp("BIGBLUEBUTTON2", {image:"tk_barrydegraaff_bigbluebutton-panelIcon", text:"BigBlueButton", index:buttonIndex, showImageInToolbar:true, showTextInToolbar:true});
 		toolbar.addOp("BIGBLUEBUTTON2", buttonIndex);
 
 		var menu = new ZmPopupMenu(button); //create menu
