@@ -27,7 +27,7 @@ After running the installer configure your BigBlueButton server and API secret l
 Deploy the Zimlet
 
      cd /tmp
-     wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.5/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
+     wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.6/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
      su zimbra
 
      cd /tmp
