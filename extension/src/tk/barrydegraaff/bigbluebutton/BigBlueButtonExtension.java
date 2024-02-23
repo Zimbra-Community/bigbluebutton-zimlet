@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018  Barry de Graaff
+Copyright (C) 2018-2024  Barry de Graaff
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

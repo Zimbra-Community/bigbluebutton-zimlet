@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="2f6a26cb-108e-4cd8-9349-2ce8e7348283" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/zimbra_libs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extension.iml" beforeDir="false" afterPath="$PROJECT_DIR$/extension.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/commons-codec-1.11.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/javax.servlet-api-3.0.1.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/json-20180813.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/mail-1.5.0-b01.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/zimbraclient.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/zimbracommon.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/zimbrastore.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/BigBlueButton_jar/BigBlueButton.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/BigBlueButton_jar/BigBlueButton.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/extension/tk/barrydegraaff/bigbluebutton/BigBlueButton.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/extension/tk/barrydegraaff/bigbluebutton/BigBlueButton.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/extension/tk/barrydegraaff/bigbluebutton/BigBlueButtonExtension.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/extension/tk/barrydegraaff/bigbluebutton/BigBlueButtonExtension.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButtonExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tk/barrydegraaff/bigbluebutton/BigBlueButtonExtension.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +39,9 @@
       </list>
     </option>
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-6" />
     <option name="width" value="1932" />
@@ -62,16 +85,22 @@
       </pane>
     </panes>
   </component>
-  <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1542115919771" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Libraries" />
-    <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
-    <property name="settings.editor.splitter.proportion" value="0.2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "/home/bar/zimbra-libs",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
+  }
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
@@ -92,11 +121,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="zm-zimbra9.barrydegraaff.tk" type="Remote">
+    <configuration name="zimbra10.barrydegraaff.nl" type="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
       <option name="SHMEM_ADDRESS" />
-      <option name="HOST" value="zm-zimbra9.barrydegraaff.tk" />
+      <option name="HOST" value="zimbra10.barrydegraaff.nl" />
       <option name="PORT" value="5005" />
       <option name="AUTO_RESTART" value="false" />
       <RunnerSettings RunnerId="Debug">

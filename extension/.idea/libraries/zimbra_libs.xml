@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="zimbra-libs">
+    <CLASSES>
+      <root url="file://$USER_HOME$/zimbra-libs" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$USER_HOME$/zimbra-libs" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/zimbra-libs" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/zimbra-libs" recursive="false" type="SOURCES" />
+  </library>
+</component>

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018  Barry de Graaff
+Copyright (C) 2018-2024  Barry de Graaff
 
 The MIT License
 
@@ -295,7 +295,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
                     "<tr><td>Meeting ID:</td><td><input name=\"meetingId\" placeholder=\"Meeting ID\" value=\"" + meetingID + "\"></td></tr>\n" +
                     "<tr><td>Your name:</td><td><input name=\"name\" placeholder=\"Your name\"></td></tr>\n" +
                     "<tr><td>Password:</td><td><input name=\"password\" placeholder=\"Password\"><input type=\"hidden\" name=\"action\" placeholder=\"action\" value=\"join\"></td></tr>\n" +
-                    "<tr><td></td><td><input type=\"Submit\"></td></tr>\n" +
+                    "<tr><td></td><td><input type=\"Submit\" value=\"Join Meeting\"></td></tr>\n" +
                     "</table></form>";
 
             resp.getOutputStream().print("<!DOCTYPE HTML>\r\n<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><style>");
