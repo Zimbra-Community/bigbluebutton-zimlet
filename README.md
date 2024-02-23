@@ -22,7 +22,7 @@ Use the automated installer:
 After running the installer configure your BigBlueButton server and API secret like so:
 
      echo  "BBBSecret=your-secret-here
-     BBBServerUrl=http://your-domain-here/bigbluebutton/api/" >> /opt/zimbra/lib/ext/bigbluebutton/config.properties
+     BBBServerUrl=http://your-domain-here/bigbluebutton/api/" > /opt/zimbra/lib/ext/bigbluebutton/config.properties
 
 
 
