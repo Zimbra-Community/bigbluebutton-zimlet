@@ -75,21 +75,19 @@ cp css/page.css /opt/zimbra/lib/ext/bigbluebutton/
 
 rm -Rf $TMPFOLDER
 
+echo "Deploying Zimlets"
+cd /tmp
+wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.6/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
+wget --no-cache https://github.com/Zimbra/zimbra-zimlet-bigbluebutton/releases/download/0.0.5/zimbra-zimlet-bigbluebutton.zip  -O /tmp/zimbra-zimlet-bigbluebutton.zip
+su - zimbra -c "/opt/zimbra/bin/zmzimletctl deploy /tmp/tk_barrydegraaff_bigbluebutton.zip"
+su - zimbra -c "/opt/zimbra/bin/zmzimletctl deploy /tmp/zimbra-zimlet-bigbluebutton.zip"
+su - zimbra -c "zmmailboxdctl restart"
+
 
 echo "--------------------------------------------------------------------------------------------------------------
 BigBlueButton Extension installed successful
 
-To activate your configuration, run as zimbra user:
-su - zimbra -c \"zmmailboxdctl restart\"
-
 WARNING: BigBlueButton database is dropped on Zimbra upgrades!
 
-Please deploy the Zimlet yourself:
-    cd /tmp
-    wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.6/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
-    su zimbra
-    
-    cd /tmp
-    zmzimletctl deploy tk_barrydegraaff_bigbluebutton.zip
 --------------------------------------------------------------------------------------------------------------
 "
