@@ -24,15 +24,10 @@ After running the installer configure your BigBlueButton server and API secret l
      echo  "BBBSecret=your-secret-here
      BBBServerUrl=http://your-domain-here/bigbluebutton/api/" >> /opt/zimbra/lib/ext/bigbluebutton/config.properties
 
-Deploy the Zimlet
 
-     cd /tmp
-     wget --no-cache https://github.com/Zimbra-Community/bigbluebutton-zimlet/releases/download/0.0.6/tk_barrydegraaff_bigbluebutton.zip -O /tmp/tk_barrydegraaff_bigbluebutton.zip
-     su zimbra
 
-     cd /tmp
-     zmzimletctl deploy tk_barrydegraaff_bigbluebutton.zip
+### Modern UI Zimlet
 
-Deploy the Zimlet for Modern UI (Zimbra 9/10)
+Modern UI Zimlet is also installed via the installer found above, but the sources can be found here for reference:
 
-See: https://github.com/Zimbra-Community/zimbra-zimlet-bigbluebutton
+https://github.com/Zimbra-Community/zimbra-zimlet-bigbluebutton
