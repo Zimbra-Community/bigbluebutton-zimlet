@@ -20,7 +20,7 @@ set -e
 # set -x
 
 
-echo "This is a development script, do not run it in prod. Hit enter, if you want to continue running this script, or CTRL+C  to abort";
+echo "This script will install Zimbra BigBlueButton on a Zimbra single server deployment. Run at your own risk, see license. Hit enter, if you want to continue running this script, or CTRL+C  to abort";
 read dum;
 
 # Make sure only root can run our script
@@ -70,6 +70,27 @@ echo "db_connect_string=jdbc:mariadb://$DB_HOST:$DB_PORT/bigbluebutton?user=bigb
 echo "Populating database please wait..."
 /opt/zimbra/bin/mysql bigbluebutton < sql/bigbluebutton.sql
 
+
+echo "Configuring daily bigbluebutton backup to  /opt/bigbluebutton-zimbra-backup..."
+rm -f /usr/local/sbin/bigbluebutton-zimbra-backup
+cat >> /usr/local/sbin/bigbluebutton-zimbra-backup << EOF
+#!/bin/bash 
+
+mkdir -p /opt/bigbluebutton-zimbra-backup
+filename=/opt/bigbluebutton-zimbra-backup/bigbluebutton-\$(date +%w).sql
+
+rm -f "\$filename"
+/opt/zimbra/common/bin/mysqldump -h "$DB_HOST" --port=7306 -u "bigbluebutton" -p"$DB_PWD" --add-drop-table "bigbluebutton" > "\$filename"
+
+chmod o-r /opt/bigbluebutton-zimbra-backup -R
+EOF
+
+chmod +x /usr/local/sbin/bigbluebutton-zimbra-backup
+rm -f /etc/cron.daily/bigbluebutton-zimbra-backup
+ln -s /usr/local/sbin/bigbluebutton-zimbra-backup /etc/cron.daily/bigbluebutton-zimbra-backup
+/usr/local/sbin/bigbluebutton-zimbra-backup
+
+
 cp extension/out/artifacts/BigBlueButton_jar/BigBlueButton.jar /opt/zimbra/lib/ext/bigbluebutton/
 cp css/page.css /opt/zimbra/lib/ext/bigbluebutton/
 
@@ -87,7 +108,9 @@ su - zimbra -c "zmmailboxdctl restart"
 echo "--------------------------------------------------------------------------------------------------------------
 BigBlueButton Extension installed successful
 
-WARNING: BigBlueButton database is dropped on Zimbra upgrades!
+- Verify if the BigBlueButton database backup is working, see /etc/cron.daily/bigbluebutton-zimbra-backup
+
+WARNING: BigBlueButton database is dropped on Zimbra upgrades! Configure the use of an external MariaDB or restore DB backup after installing Zimbra patches/upgrades!
 
 --------------------------------------------------------------------------------------------------------------
 "
