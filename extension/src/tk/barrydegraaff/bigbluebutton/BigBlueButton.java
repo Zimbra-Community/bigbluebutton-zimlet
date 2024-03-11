@@ -76,6 +76,18 @@ public class BigBlueButton extends ExtensionHttpHandler {
     private String BBBServerUrl;
     private String DbConnectionString;
 
+    //i18n
+    private String language;
+    private String mail1;
+    private String mail2;
+    private String mail3;
+    private String mail4;
+    private String mail_subject;
+    private String join1;
+    private String join2;
+    private String join3;
+    private String join4;
+
     /**
      * Processes HTTP POST requests.
      *
@@ -116,12 +128,30 @@ public class BigBlueButton extends ExtensionHttpHandler {
             this.BBBSecret = prop.getProperty("BBBSecret");
             this.BBBServerUrl = prop.getProperty("BBBServerUrl");
             this.DbConnectionString = prop.getProperty("db_connect_string");
+            this.language = prop.getProperty("language", "english");
             input.close();
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
         }
 
+        try {
+            FileInputStream input = new FileInputStream("/opt/zimbra/lib/ext/bigbluebutton/"+this.language+".properties");
+            prop.load(input);
+            this.mail1 = prop.getProperty("mail1");
+            this.mail2 = prop.getProperty("mail2");
+            this.mail3 = prop.getProperty("mail3");
+            this.mail4 = prop.getProperty("mail4");
+            this.mail_subject = prop.getProperty("mail_subject");
+            this.join1 = prop.getProperty("join1");
+            this.join2 = prop.getProperty("join2");
+            this.join3 = prop.getProperty("join3");
+            this.join4 = prop.getProperty("join4");
+            input.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
         //Process get request with parameters
         final Map<String, String> paramsMap = new HashMap<String, String>();
         if (req.getQueryString() != null) {
@@ -292,10 +322,10 @@ public class BigBlueButton extends ExtensionHttpHandler {
 
             resp.setHeader("Content-Type", "text/html");
             String message = "<form method=\"GET\" action=\"/service/extension/bigbluebutton\"><table>\n" +
-                    "<tr><td>Meeting ID:</td><td><input name=\"meetingId\" placeholder=\"Meeting ID\" value=\"" + meetingID + "\"></td></tr>\n" +
-                    "<tr><td>Your name:</td><td><input name=\"name\" placeholder=\"Your name\"></td></tr>\n" +
-                    "<tr><td>Password:</td><td><input name=\"password\" placeholder=\"Password\"><input type=\"hidden\" name=\"action\" placeholder=\"action\" value=\"join\"></td></tr>\n" +
-                    "<tr><td></td><td><input type=\"Submit\" value=\"Join Meeting\"></td></tr>\n" +
+                    "<tr><td>"+this.join1+":</td><td><input name=\"meetingId\" value=\"" + meetingID + "\"></td></tr>\n" +
+                    "<tr><td>"+this.join2+":</td><td><input name=\"name\"></td></tr>\n" +
+                    "<tr><td>"+this.join3+":</td><td><input name=\"password\"><input type=\"hidden\" name=\"action\" placeholder=\"action\" value=\"join\"></td></tr>\n" +
+                    "<tr><td></td><td><input type=\"Submit\" value=\""+this.join4+"\"></td></tr>\n" +
                     "</table></form>";
 
             resp.getOutputStream().print("<!DOCTYPE HTML>\r\n<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><style>");
@@ -306,7 +336,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
             if (!"".equals(message)) {
                 message = message.concat("<br><br>");
             }
-            resp.getOutputStream().print("</head><body><div class=\"main\"><div class=\"logo\"></div><h1>Join Meeting</h1><p>" + message + "</p>");
+            resp.getOutputStream().print("</head><body><div class=\"main\"><div class=\"logo\"></div><h1>"+this.join4+"</h1><p>" + message + "</p>");
         } catch (
                 Exception ex) {
             ex.printStackTrace();
@@ -318,9 +348,8 @@ public class BigBlueButton extends ExtensionHttpHandler {
             MimeMessage mm = new Mime.FixedMimeMessage(JMSession.getSmtpSession(account));
             String to = account.getName();
             mm.setRecipient(javax.mail.Message.RecipientType.TO, new JavaMailInternetAddress(to));
-            //mm.setText("To join the Meeting Online go to:\\r\\n[meetinglink]\\r\\n\\r\\nYou can use the following password:\\r\\n[password]\\r\\n", MimeConstants.P_CHARSET_UTF8);
-            mm.setContent("You have just scheduled a new BigBlueButton meeting.<br><br><a href=\"" + hostname + "/service/extension/bigbluebutton?meetingId=" + meetingId + "\">Click here to join Online Meeting</a><br><br>You can use the following moderator password: <b>" + moderatorPassword + "</b><br>And share the following password for your attendees: <b>" + attendeePassword + "</b>", MimeConstants.CT_TEXT_HTML);
-            mm.setSubject("BigBlueButton meeting confirmation");
+            mm.setContent(this.mail1 + "<br><br><a href=\"" + hostname + "/service/extension/bigbluebutton?meetingId=" + meetingId + "\">"+this.mail2+"</a><br><br>"+this.mail3+": <b>" + moderatorPassword + "</b><br>"+this.mail4+" <b>" + attendeePassword + "</b>", "text/html;charset=UTF-8");
+            mm.setSubject(this.mail_subject, "UTF-8");
             mm.saveChanges();
 
             Mailbox mbox = MailboxManager.getInstance().getMailboxByAccount(account);

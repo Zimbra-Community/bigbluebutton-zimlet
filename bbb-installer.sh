@@ -93,6 +93,7 @@ ln -s /usr/local/sbin/bigbluebutton-zimbra-backup /etc/cron.daily/bigbluebutton-
 
 cp extension/out/artifacts/BigBlueButton_jar/BigBlueButton.jar /opt/zimbra/lib/ext/bigbluebutton/
 cp css/page.css /opt/zimbra/lib/ext/bigbluebutton/
+cp extension/i18n/* /opt/zimbra/lib/ext/bigbluebutton/
 
 rm -Rf $TMPFOLDER
 
