@@ -39,4 +39,4 @@ If you are adding a new translation make sure to use the unicode conversion tool
 
 Modern UI Zimlet is also installed via the installer found above, but the sources can be found here for reference:
 
-https://github.com/Zimbra-Community/zimbra-zimlet-bigbluebutton
+https://github.com/Zimbra/zimbra-zimlet-bigbluebutton
