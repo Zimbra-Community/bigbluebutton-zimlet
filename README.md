@@ -33,6 +33,7 @@ language=french
 ```
 The translation will then be read from `/opt/zimbra/lib/ext/bigbluebutton/french.properties` the name of the properties file must match the one configured in the `langauge` property. There is no need to restart mailbox.
 
+If you are adding a new translation make sure to use the unicode conversion tool from: http://itpro.cz/juniconv/
 
 ### Modern UI Zimlet
 
