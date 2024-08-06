@@ -87,6 +87,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
     private String join2;
     private String join3;
     private String join4;
+    private String join5;
 
     /**
      * Processes HTTP POST requests.
@@ -147,6 +148,7 @@ public class BigBlueButton extends ExtensionHttpHandler {
             this.join2 = prop.getProperty("join2");
             this.join3 = prop.getProperty("join3");
             this.join4 = prop.getProperty("join4");
+            this.join5 = prop.getProperty("join5");
             input.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -202,8 +204,9 @@ public class BigBlueButton extends ExtensionHttpHandler {
                                     ) {
                                         String joinUrl = bbbRequest("join", "meetingID=" + meeting.getString("meetingId") + "&password=" + req.getParameter("password") + "&fullName=" + encodeURIComponent(req.getParameter("name")));
                                         resp.setCharacterEncoding("UTF-8");
-                                        resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-                                        resp.setHeader("Location", joinUrl);
+                                        //resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                                        //resp.setHeader("Location", joinUrl);
+                                        joinPage(resp, joinUrl);
                                     } else {
                                         showPage(resp, meeting.getString("meetingId"));
                                     }
@@ -337,6 +340,23 @@ public class BigBlueButton extends ExtensionHttpHandler {
                 message = message.concat("<br><br>");
             }
             resp.getOutputStream().print("</head><body><div class=\"main\"><div class=\"logo\"></div><h1>"+this.join4+"</h1><p>" + message + "</p>");
+        } catch (
+                Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void joinPage(HttpServletResponse resp, String meetingURL) throws IOException, ServletException {
+        try {
+
+            resp.setHeader("Content-Type", "text/html");
+
+            resp.getOutputStream().print("<!DOCTYPE HTML>\r\n<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><style>");
+
+            byte[] encoded = Files.readAllBytes(Paths.get("/opt/zimbra/lib/ext/bigbluebutton/page.css"));
+            resp.getOutputStream().print(new String(encoded, StandardCharsets.UTF_8));
+            resp.getOutputStream().print("</style><title>Zimbra BigBlueButton Meeting</title>");
+            resp.getOutputStream().print("</head><body><div class=\"main\"><div class=\"logo\"></div><h1>"+this.join4+"</h1><p><a href=\""+meetingURL+"\">"+this.mail2+"</a><br><br>" + this.join5 + "<br><br><input type=\"text\" value=\""+meetingURL+"\"></p>");
         } catch (
                 Exception ex) {
             ex.printStackTrace();

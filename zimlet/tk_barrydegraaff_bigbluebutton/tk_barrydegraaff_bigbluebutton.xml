@@ -1,4 +1,4 @@
-<zimlet name="tk_barrydegraaff_bigbluebutton" version="0.0.7" label="BigBlueButton" description="BigBlueButton provides real-time sharing of audio, video, slides, chat, and screen.">
+<zimlet name="tk_barrydegraaff_bigbluebutton" version="0.0.8" label="BigBlueButton" description="BigBlueButton provides real-time sharing of audio, video, slides, chat, and screen.">
    <summary></summary>
    <resource>BigBlueButton.png</resource>
    <include>tk_barrydegraaff_bigbluebutton.js</include>
